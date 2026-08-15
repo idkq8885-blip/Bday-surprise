@@ -1,0 +1,727 @@
+/* =========================================
+   BASIC RESET
+========================================= */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    background: #080808;
+    color: white;
+    font-family: Arial, Helvetica, sans-serif;
+    overflow-x: hidden;
+}
+
+
+/* =========================================
+   GENERAL
+========================================= */
+
+.hidden {
+    display: none !important;
+}
+
+.screen {
+    min-height: 100vh;
+}
+
+
+/* =========================================
+   INTRO SCREEN
+========================================= */
+
+.intro-screen {
+    min-height: 100vh;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    text-align: center;
+
+    background:
+        radial-gradient(
+            circle at center,
+            #24152a 0%,
+            #0d0d0f 45%,
+            #050505 100%
+        );
+}
+
+.intro-content {
+    max-width: 600px;
+    padding: 30px;
+}
+
+.sparkle {
+    font-size: 45px;
+    margin-bottom: 25px;
+
+    animation: floating 2s ease-in-out infinite;
+}
+
+.intro-content h1 {
+    font-size: clamp(42px, 8vw, 80px);
+    font-weight: 300;
+    letter-spacing: -2px;
+    margin-bottom: 20px;
+}
+
+.intro-content p {
+    color: #bcbcbc;
+    font-size: 18px;
+    line-height: 1.7;
+    margin-bottom: 40px;
+}
+
+
+/* =========================================
+   BUTTON
+========================================= */
+
+button {
+    border: none;
+
+    padding: 16px 28px;
+
+    border-radius: 50px;
+
+    background: white;
+    color: black;
+
+    font-size: 15px;
+    font-weight: bold;
+
+    cursor: pointer;
+
+    transition:
+        transform 0.3s ease,
+        box-shadow 0.3s ease;
+}
+
+button:hover {
+    transform: translateY(-4px);
+
+    box-shadow:
+        0 10px 30px rgba(255, 255, 255, 0.15);
+}
+
+
+/* =========================================
+   CONFETTI
+========================================= */
+
+#confettiCanvas {
+    position: fixed;
+
+    inset: 0;
+
+    width: 100%;
+    height: 100%;
+
+    pointer-events: none;
+
+    z-index: 9999;
+}
+
+
+/* =========================================
+   JOURNEY
+========================================= */
+
+.journey {
+    background:
+        radial-gradient(
+            circle at 50% 0%,
+            #24182c,
+            #080808 55%
+        );
+}
+
+
+/* =========================================
+   SECTIONS
+========================================= */
+
+.section,
+.photo-section,
+.transition-section,
+.almost-end,
+.rotate-section {
+
+    min-height: 100vh;
+
+    display: flex;
+
+    flex-direction: column;
+
+    justify-content: center;
+
+    align-items: center;
+
+    text-align: center;
+
+    padding: 80px 25px;
+}
+
+
+/* =========================================
+   CHILDHOOD INTRO
+========================================= */
+
+.childhood-intro h2,
+.transition-section h2,
+.almost-end h2 {
+
+    font-size: clamp(45px, 8vw, 90px);
+
+    font-weight: 300;
+
+    margin: 20px 0;
+
+    letter-spacing: -3px;
+}
+
+.childhood-intro p,
+.transition-section p,
+.almost-end p {
+
+    color: #aaa;
+
+    font-size: 18px;
+
+    line-height: 1.6;
+}
+
+.small-title {
+
+    color: #d9a7ff !important;
+
+    font-size: 12px !important;
+
+    font-weight: bold;
+
+    letter-spacing: 4px;
+
+}
+
+
+/* =========================================
+   PHOTO SECTIONS
+========================================= */
+
+.photo-section {
+    gap: 35px;
+}
+
+
+/* =========================================
+   CHILDHOOD PHOTO CARD
+========================================= */
+
+.photo-card {
+
+    width: min(75vw, 420px);
+
+    padding: 12px;
+
+    background: #f2eee7;
+
+    box-shadow:
+        0 30px 80px rgba(0, 0, 0, 0.6);
+
+    transition:
+        transform 0.5s ease;
+}
+
+.photo-card img {
+
+    width: 100%;
+
+    display: block;
+
+    aspect-ratio: 4 / 5;
+
+    object-fit: cover;
+}
+
+
+/* Slanted photos */
+
+.tilted-left {
+
+    transform: rotate(-5deg);
+}
+
+.tilted-right {
+
+    transform: rotate(5deg);
+}
+
+
+/* =========================================
+   PHOTO MESSAGE
+========================================= */
+
+.photo-message {
+
+    max-width: 500px;
+
+    font-size: 20px;
+
+    line-height: 1.6;
+
+    color: #d2d2d2;
+
+    font-family: Georgia, serif;
+
+    font-style: italic;
+}
+
+
+/* =========================================
+   MODERN PHOTOS
+========================================= */
+
+.modern-photo {
+
+    width: min(85vw, 700px);
+
+    overflow: hidden;
+
+    border-radius: 8px;
+
+    box-shadow:
+        0 30px 80px rgba(0, 0, 0, 0.7);
+}
+
+.modern-photo img {
+
+    width: 100%;
+
+    display: block;
+
+    aspect-ratio: 4 / 5;
+
+    object-fit: cover;
+
+    transition: transform 0.7s ease;
+}
+
+.modern-photo:hover img {
+
+    transform: scale(1.04);
+}
+
+
+/* =========================================
+   TRANSITIONS
+========================================= */
+
+.transition-section {
+
+    background:
+        radial-gradient(
+            circle,
+            #18121d,
+            #080808 65%
+        );
+}
+
+.almost-end {
+
+    min-height: 80vh;
+}
+
+
+/* =========================================
+   ROTATE PHONE
+========================================= */
+
+.rotate-section {
+
+    min-height: 100vh;
+
+    background: #050505;
+}
+
+.phone-icon {
+
+    font-size: 65px;
+
+    margin-bottom: 30px;
+
+    animation: phoneRotate 2s ease-in-out infinite;
+}
+
+.rotate-section h2 {
+
+    font-size: clamp(40px, 7vw, 75px);
+
+    font-weight: 300;
+
+    margin-bottom: 20px;
+}
+
+.rotate-section p {
+
+    color: #aaa;
+
+    line-height: 1.7;
+
+    font-size: 18px;
+}
+
+.rotate-animation {
+
+    font-size: 70px;
+
+    margin: 30px 0;
+
+    animation: rotateArrow 2s linear infinite;
+}
+
+
+/* =========================================
+   FINAL SCREEN
+========================================= */
+
+.final-screen {
+
+    position: fixed;
+
+    inset: 0;
+
+    width: 100vw;
+    height: 100vh;
+
+    background: black;
+
+    overflow: hidden;
+
+    z-index: 10000;
+}
+
+
+/* =========================================
+   FINAL PHOTO
+========================================= */
+
+.final-photo-container {
+
+    position: absolute;
+
+    inset: 0;
+
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
+
+    background: black;
+}
+
+.final-photo {
+
+    width: 100%;
+    height: 100%;
+
+    object-fit: cover;
+
+    opacity: 0;
+
+    animation: photoAppear 3s ease forwards;
+}
+
+
+/* =========================================
+   FINAL OVERLAY
+========================================= */
+
+.final-overlay {
+
+    position: absolute;
+
+    inset: 0;
+
+    background:
+        linear-gradient(
+            to bottom,
+            rgba(0,0,0,0.8),
+            rgba(0,0,0,0.45),
+            rgba(0,0,0,0.9)
+        );
+}
+
+
+/* =========================================
+   CINEMATIC CRAWL
+========================================= */
+
+.crawl-container {
+
+    position: absolute;
+
+    inset: 0;
+
+    overflow: hidden;
+
+    perspective: 400px;
+
+    display: flex;
+
+    justify-content: center;
+}
+
+.crawl {
+
+    position: absolute;
+
+    top: 100%;
+
+    width: 70%;
+
+    max-width: 900px;
+
+    text-align: center;
+
+    color: #f5df52;
+
+    font-family: Arial, Helvetica, sans-serif;
+
+    font-weight: bold;
+
+    transform-origin: 50% 100%;
+
+    transform:
+        rotateX(25deg)
+        translateY(0);
+
+    animation:
+        crawl 55s linear forwards;
+}
+
+
+/* Main crawl heading */
+
+.crawl h1 {
+
+    font-size: clamp(28px, 5vw, 65px);
+
+    margin-bottom: 45px;
+
+    letter-spacing: 5px;
+}
+
+
+/* Second heading */
+
+.crawl h2 {
+
+    font-size: clamp(18px, 3vw, 35px);
+
+    margin-bottom: 70px;
+
+    letter-spacing: 3px;
+}
+
+
+/* Paragraph */
+
+.crawl p {
+
+    font-size: clamp(18px, 2.5vw, 32px);
+
+    line-height: 1.6;
+
+    margin-bottom: 80px;
+
+}
+
+
+/* =========================================
+   FINAL ENDING
+========================================= */
+
+.final-ending {
+
+    position: absolute;
+
+    inset: 0;
+
+    display: flex;
+
+    flex-direction: column;
+
+    justify-content: center;
+
+    align-items: center;
+
+    text-align: center;
+
+    background: black;
+
+    opacity: 0;
+
+    animation:
+        finalEnding 4s ease forwards;
+
+    animation-delay: 48s;
+
+    pointer-events: none;
+}
+
+.final-ending div {
+
+    font-size: 50px;
+
+    margin-bottom: 20px;
+}
+
+.final-ending h1 {
+
+    font-size: clamp(40px, 8vw, 90px);
+
+    font-weight: 300;
+
+    margin-bottom: 15px;
+}
+
+.final-ending p {
+
+    color: #aaa;
+
+    letter-spacing: 5px;
+}
+
+
+/* =========================================
+   ANIMATIONS
+========================================= */
+
+@keyframes floating {
+
+    0%, 100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-12px);
+    }
+}
+
+
+@keyframes phoneRotate {
+
+    0%, 100% {
+        transform: rotate(0deg);
+    }
+
+    50% {
+        transform: rotate(90deg);
+    }
+}
+
+
+@keyframes rotateArrow {
+
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+
+@keyframes photoAppear {
+
+    from {
+        opacity: 0;
+
+        transform: scale(1.08);
+    }
+
+    to {
+        opacity: 0.85;
+
+        transform: scale(1);
+    }
+}
+
+
+@keyframes crawl {
+
+    from {
+
+        top: 100%;
+
+        transform:
+            rotateX(25deg)
+            translateY(0);
+    }
+
+    to {
+
+        top: -250%;
+
+        transform:
+            rotateX(25deg)
+            translateY(0);
+    }
+}
+
+
+@keyframes finalEnding {
+
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+
+/* =========================================
+   MOBILE
+========================================= */
+
+@media (max-width: 600px) {
+
+    .intro-content h1 {
+
+        letter-spacing: -1px;
+    }
+
+    .photo-card {
+
+        width: 80vw;
+    }
+
+    .modern-photo {
+
+        width: 85vw;
+    }
+
+    .crawl {
+
+        width: 85%;
+    }
+
+    .crawl p {
+
+        margin-bottom: 60px;
+    }
+
+}
