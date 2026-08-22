@@ -7,10 +7,29 @@
 
     <title>A Little Birthday Journey</title>
 
+    <link rel="icon" href="data:,">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;1,9..144,400;1,9..144,600&family=Quicksand:wght@400;500;600;700&family=Caveat:wght@500;600&display=swap" rel="stylesheet">
+
     <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
+
+    <!-- =========================================
+         AMBIENT STARFIELD
+
+         Sits behind everything, drawn once and
+         gently twinkling. This is the visual
+         thread that ties the whole journey
+         together, from the intro to the final
+         cinematic crawl.
+    ========================================== -->
+
+    <canvas id="starCanvas"></canvas>
+
 
     <!-- =========================================
          INTRO SCREEN
@@ -18,11 +37,15 @@
 
     <section id="intro" class="screen intro-screen">
 
+        <div class="intro-glow"></div>
+
         <div class="intro-content">
 
             <div class="sparkle">✦</div>
 
-            <h1>A Little Journey</h1>
+            <p class="eyebrow">a little something for you</p>
+
+            <h1>A Little <span class="script">Journey</span></h1>
 
             <p>
                 A tiny birthday surprise<br>
@@ -30,7 +53,7 @@
             </p>
 
             <button id="startButton">
-                Start the Journey →
+                Start the Journey <span class="btn-arrow">→</span>
             </button>
 
         </div>
@@ -43,6 +66,23 @@
     ========================================== -->
 
     <canvas id="confettiCanvas"></canvas>
+
+
+    <!-- =========================================
+         BACKGROUND MUSIC
+
+         Drop your own song file at music/song.mp3.
+         It starts softly right when the journey
+         begins (browsers require a user action like
+         a click before audio can play, so it's tied
+         to the Start button).
+    ========================================== -->
+
+    <audio id="bgMusic" src="music/song.mp3" loop preload="auto"></audio>
+
+    <button id="muteButton" class="mute-button hidden" aria-label="Mute music">
+        🔊
+    </button>
 
 
     <!-- =========================================
@@ -61,7 +101,7 @@
             <p class="small-title">MEMORY 01</p>
 
             <h2>
-                Before I knew you...
+                Before I knew <span class="script">you</span>...
             </h2>
 
             <p>
@@ -126,7 +166,7 @@
             <p class="small-title">AND THEN...</p>
 
             <h2>
-                You grew up.
+                You grew <span class="script">up</span>.
             </h2>
 
             <p>
@@ -213,7 +253,7 @@
             <p class="small-title">THAT'S ALL...</p>
 
             <h2>
-                Or is it?
+                Or is <span class="script">it?</span>
             </h2>
 
             <p>
@@ -355,7 +395,11 @@
 
         <div class="final-ending">
 
-            <div>
+            <span class="floaty floaty-1">✦</span>
+            <span class="floaty floaty-2">❤</span>
+            <span class="floaty floaty-3">✦</span>
+
+            <div class="final-heart">
                 ❤️
             </div>
 
@@ -363,7 +407,7 @@
                 Happy Birthday
             </h1>
 
-            <p>
+            <p class="final-name">
                 [ HER NAME ]
             </p>
 

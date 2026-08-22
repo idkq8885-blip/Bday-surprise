@@ -1,4 +1,36 @@
 /* =========================================
+   DESIGN TOKENS
+
+   Palette: a night-sky base with a lilac +
+   bubblegum-pink duotone accent and a warm
+   starlight gold used sparingly for magic
+   moments. Cool (lilac/night) and cute
+   (pink/gold/rounded type) living together.
+========================================= */
+
+:root {
+
+    --bg-deep:      #0b0620;
+    --bg-mid:       #1c1030;
+    --bg-soft:      #241536;
+
+    --lilac:        #c9a6ff;
+    --pink:         #ff9fc7;
+    --gold:         #ffd982;
+
+    --text-main:    #f5f0ff;
+    --text-muted:   #ad9fce;
+
+    --font-display: "Fraunces", Georgia, serif;
+    --font-script:  "Caveat", cursive;
+    --font-body:    "Quicksand", Arial, Helvetica, sans-serif;
+
+    --glow-lilac:   rgba(201, 166, 255, 0.35);
+    --glow-pink:    rgba(255, 159, 199, 0.3);
+}
+
+
+/* =========================================
    BASIC RESET
 ========================================= */
 
@@ -13,10 +45,25 @@ html {
 }
 
 body {
-    background: #080808;
-    color: white;
-    font-family: Arial, Helvetica, sans-serif;
+    background: var(--bg-deep);
+    color: var(--text-main);
+    font-family: var(--font-body);
+    font-weight: 500;
     overflow-x: hidden;
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+    html {
+        scroll-behavior: auto;
+    }
+
+    * {
+        animation-duration: 0.001ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.001ms !important;
+    }
+
 }
 
 
@@ -29,7 +76,67 @@ body {
 }
 
 .screen {
-    min-height: 100vh;
+    min-height: 100dvh;
+}
+
+.script {
+
+    font-family: var(--font-script);
+    font-weight: 600;
+
+    background: linear-gradient(100deg, var(--lilac), var(--pink));
+
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.eyebrow {
+
+    font-family: var(--font-body);
+    font-weight: 600;
+
+    color: var(--pink);
+
+    font-size: 12px;
+
+    letter-spacing: 3px;
+    text-transform: uppercase;
+
+    margin-bottom: 18px;
+
+    opacity: 0.85;
+}
+
+
+/* =========================================
+   AMBIENT STARFIELD
+========================================= */
+
+#starCanvas {
+
+    position: absolute;
+
+    top: 0;
+    left: 0;
+
+    z-index: 0;
+
+    pointer-events: none;
+}
+
+
+/* Everything else sits above the starfield */
+
+.intro-screen,
+.journey,
+.final-screen,
+#confettiCanvas,
+.mute-button {
+
+    position: relative;
+
+    z-index: 1;
 }
 
 
@@ -38,7 +145,7 @@ body {
 ========================================= */
 
 .intro-screen {
-    min-height: 100vh;
+    min-height: 100dvh;
 
     display: flex;
     justify-content: center;
@@ -46,13 +153,41 @@ body {
 
     text-align: center;
 
+    overflow: hidden;
+
     background:
         radial-gradient(
-            circle at center,
-            #24152a 0%,
-            #0d0d0f 45%,
-            #050505 100%
+            circle at 50% 30%,
+            rgba(28, 16, 48, 0.92) 0%,
+            rgba(11, 6, 32, 0.55) 55%,
+            rgba(11, 6, 32, 0.1) 100%
         );
+}
+
+.intro-glow {
+
+    position: absolute;
+
+    top: 50%;
+    left: 50%;
+
+    width: 700px;
+    height: 700px;
+
+    transform: translate(-50%, -50%);
+
+    background:
+        radial-gradient(
+            circle,
+            var(--glow-lilac) 0%,
+            transparent 70%
+        );
+
+    filter: blur(40px);
+
+    animation: driftGlow 10s ease-in-out infinite;
+
+    pointer-events: none;
 }
 
 .intro-content {
@@ -61,21 +196,28 @@ body {
 }
 
 .sparkle {
-    font-size: 45px;
-    margin-bottom: 25px;
+    font-size: 40px;
+    margin-bottom: 20px;
 
-    animation: floating 2s ease-in-out infinite;
+    color: var(--gold);
+
+    animation: floating 3s ease-in-out infinite;
 }
 
 .intro-content h1 {
-    font-size: clamp(42px, 8vw, 80px);
+
+    font-family: var(--font-display);
     font-weight: 300;
-    letter-spacing: -2px;
-    margin-bottom: 20px;
+
+    font-size: clamp(42px, 8vw, 78px);
+
+    letter-spacing: -1px;
+
+    margin-bottom: 22px;
 }
 
 .intro-content p {
-    color: #bcbcbc;
+    color: var(--text-muted);
     font-size: 18px;
     line-height: 1.7;
     margin-bottom: 40px;
@@ -89,17 +231,23 @@ body {
 button {
     border: none;
 
-    padding: 16px 28px;
+    padding: 17px 32px;
 
     border-radius: 50px;
 
-    background: white;
-    color: black;
+    background: linear-gradient(100deg, var(--lilac), var(--pink));
+    color: #1c1030;
 
+    font-family: var(--font-body);
     font-size: 15px;
-    font-weight: bold;
+    font-weight: 700;
+
+    letter-spacing: 0.3px;
 
     cursor: pointer;
+
+    box-shadow:
+        0 8px 30px var(--glow-pink);
 
     transition:
         transform 0.3s ease,
@@ -110,7 +258,74 @@ button:hover {
     transform: translateY(-4px);
 
     box-shadow:
-        0 10px 30px rgba(255, 255, 255, 0.15);
+        0 14px 36px var(--glow-lilac);
+}
+
+button:focus-visible {
+
+    outline: 2px solid var(--gold);
+    outline-offset: 3px;
+}
+
+.btn-arrow {
+
+    display: inline-block;
+
+    transition: transform 0.3s ease;
+}
+
+button:hover .btn-arrow {
+
+    transform: translateX(4px);
+}
+
+
+/* =========================================
+   MUTE BUTTON
+========================================= */
+
+.mute-button {
+
+    position: fixed;
+
+    top: 20px;
+    right: 20px;
+
+    width: 46px;
+    height: 46px;
+
+    padding: 0;
+
+    display: flex;
+
+    justify-content: center;
+    align-items: center;
+
+    border-radius: 50%;
+
+    background: rgba(245, 240, 255, 0.1);
+    color: var(--text-main);
+
+    box-shadow: none;
+
+    font-size: 19px;
+
+    backdrop-filter: blur(6px);
+
+    z-index: 10001;
+
+    transition:
+        background 0.3s ease,
+        transform 0.3s ease;
+}
+
+.mute-button:hover {
+
+    background: rgba(245, 240, 255, 0.2);
+
+    transform: translateY(0);
+
+    box-shadow: none;
 }
 
 
@@ -140,8 +355,9 @@ button:hover {
     background:
         radial-gradient(
             circle at 50% 0%,
-            #24182c,
-            #080808 55%
+            rgba(28, 16, 48, 0.8),
+            rgba(11, 6, 32, 0.35) 55%,
+            rgba(11, 6, 32, 0.1) 100%
         );
 }
 
@@ -156,7 +372,9 @@ button:hover {
 .almost-end,
 .rotate-section {
 
-    min-height: 100vh;
+    position: relative;
+
+    min-height: 100dvh;
 
     display: flex;
 
@@ -169,31 +387,78 @@ button:hover {
     text-align: center;
 
     padding: 80px 25px;
+
+    opacity: 0;
+    transform: translateY(28px);
+
+    transition:
+        opacity 0.9s ease,
+        transform 0.9s ease;
+}
+
+.section.in-view,
+.photo-section.in-view,
+.transition-section.in-view,
+.almost-end.in-view,
+.rotate-section.in-view {
+
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Small centered divider between sections */
+
+.section::after,
+.transition-section::after,
+.photo-section::after {
+
+    content: "✦";
+
+    position: absolute;
+
+    bottom: 28px;
+    left: 50%;
+
+    transform: translateX(-50%);
+
+    font-size: 13px;
+
+    color: var(--lilac);
+
+    opacity: 0.45;
+}
+
+.almost-end::after,
+.rotate-section::after {
+
+    content: none;
 }
 
 
 /* =========================================
-   CHILDHOOD INTRO
+   CHILDHOOD INTRO / TRANSITION / ALMOST-END
 ========================================= */
 
 .childhood-intro h2,
 .transition-section h2,
 .almost-end h2 {
 
-    font-size: clamp(45px, 8vw, 90px);
+    font-family: var(--font-display);
+    font-style: italic;
+    font-weight: 400;
 
-    font-weight: 300;
+    font-size: clamp(44px, 8vw, 88px);
 
-    margin: 20px 0;
+    margin: 18px 0;
 
-    letter-spacing: -3px;
+    letter-spacing: -1px;
 }
 
 .childhood-intro p,
 .transition-section p,
 .almost-end p {
 
-    color: #aaa;
+    color: var(--text-muted);
 
     font-size: 18px;
 
@@ -202,14 +467,17 @@ button:hover {
 
 .small-title {
 
-    color: #d9a7ff !important;
+    font-family: var(--font-body);
+
+    color: var(--pink) !important;
 
     font-size: 12px !important;
 
-    font-weight: bold;
+    font-weight: 700;
 
     letter-spacing: 4px;
 
+    opacity: 0.9;
 }
 
 
@@ -223,19 +491,24 @@ button:hover {
 
 
 /* =========================================
-   CHILDHOOD PHOTO CARD
+   CHILDHOOD PHOTO CARD — polaroid style
 ========================================= */
 
 .photo-card {
 
+    position: relative;
+
     width: min(75vw, 420px);
 
-    padding: 12px;
+    padding: 14px 14px 46px;
 
     background: #f2eee7;
 
+    border-radius: 3px;
+
     box-shadow:
-        0 30px 80px rgba(0, 0, 0, 0.6);
+        0 30px 80px rgba(0, 0, 0, 0.6),
+        0 0 60px -20px var(--glow-lilac);
 
     transition:
         transform 0.5s ease;
@@ -252,6 +525,33 @@ button:hover {
     object-fit: cover;
 }
 
+/* Washi-tape corner, purely decorative */
+
+.photo-card::before {
+
+    content: "";
+
+    position: absolute;
+
+    top: -14px;
+    left: 50%;
+
+    width: 70px;
+    height: 26px;
+
+    transform: translateX(-50%) rotate(-3deg);
+
+    background: linear-gradient(
+        100deg,
+        rgba(201, 166, 255, 0.55),
+        rgba(255, 159, 199, 0.55)
+    );
+
+    opacity: 0.8;
+
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+}
+
 
 /* Slanted photos */
 
@@ -260,9 +560,19 @@ button:hover {
     transform: rotate(-5deg);
 }
 
+.tilted-left:hover {
+
+    transform: rotate(-2deg) scale(1.02);
+}
+
 .tilted-right {
 
     transform: rotate(5deg);
+}
+
+.tilted-right:hover {
+
+    transform: rotate(2deg) scale(1.02);
 }
 
 
@@ -274,15 +584,15 @@ button:hover {
 
     max-width: 500px;
 
-    font-size: 20px;
+    font-size: 21px;
 
     line-height: 1.6;
 
-    color: #d2d2d2;
+    color: var(--text-muted);
 
-    font-family: Georgia, serif;
-
+    font-family: var(--font-display);
     font-style: italic;
+    font-weight: 400;
 }
 
 
@@ -296,10 +606,11 @@ button:hover {
 
     overflow: hidden;
 
-    border-radius: 8px;
+    border-radius: 14px;
 
     box-shadow:
-        0 30px 80px rgba(0, 0, 0, 0.7);
+        0 30px 80px rgba(0, 0, 0, 0.7),
+        0 0 70px -25px var(--glow-pink);
 }
 
 .modern-photo img {
@@ -330,14 +641,14 @@ button:hover {
     background:
         radial-gradient(
             circle,
-            #18121d,
-            #080808 65%
+            rgba(36, 21, 54, 0.7),
+            rgba(11, 6, 32, 0.15) 65%
         );
 }
 
 .almost-end {
 
-    min-height: 80vh;
+    min-height: 80dvh;
 }
 
 
@@ -347,32 +658,32 @@ button:hover {
 
 .rotate-section {
 
-    min-height: 100vh;
-
-    background: #050505;
+    min-height: 100dvh;
 }
 
 .phone-icon {
 
-    font-size: 65px;
+    font-size: 60px;
 
-    margin-bottom: 30px;
+    margin-bottom: 28px;
 
     animation: phoneRotate 2s ease-in-out infinite;
 }
 
 .rotate-section h2 {
 
-    font-size: clamp(40px, 7vw, 75px);
+    font-family: var(--font-display);
+    font-style: italic;
+    font-weight: 400;
 
-    font-weight: 300;
+    font-size: clamp(40px, 7vw, 72px);
 
-    margin-bottom: 20px;
+    margin-bottom: 18px;
 }
 
 .rotate-section p {
 
-    color: #aaa;
+    color: var(--text-muted);
 
     line-height: 1.7;
 
@@ -381,9 +692,11 @@ button:hover {
 
 .rotate-animation {
 
-    font-size: 70px;
+    font-size: 60px;
 
-    margin: 30px 0;
+    margin: 28px 0;
+
+    color: var(--lilac);
 
     animation: rotateArrow 2s linear infinite;
 }
@@ -400,7 +713,7 @@ button:hover {
     inset: 0;
 
     width: 100vw;
-    height: 100vh;
+    height: 100dvh;
 
     background: black;
 
@@ -455,9 +768,9 @@ button:hover {
     background:
         linear-gradient(
             to bottom,
-            rgba(0,0,0,0.8),
-            rgba(0,0,0,0.45),
-            rgba(0,0,0,0.9)
+            rgba(11, 6, 32, 0.85),
+            rgba(11, 6, 32, 0.5),
+            rgba(11, 6, 32, 0.92)
         );
 }
 
@@ -493,11 +806,10 @@ button:hover {
 
     text-align: center;
 
-    color: #f5df52;
+    color: var(--gold);
 
-    font-family: Arial, Helvetica, sans-serif;
-
-    font-weight: bold;
+    font-family: var(--font-body);
+    font-weight: 700;
 
     transform-origin: 50% 100%;
 
@@ -514,11 +826,15 @@ button:hover {
 
 .crawl h1 {
 
-    font-size: clamp(28px, 5vw, 65px);
+    font-family: var(--font-display);
+    font-style: italic;
+    font-weight: 500;
+
+    font-size: clamp(30px, 5vw, 66px);
 
     margin-bottom: 45px;
 
-    letter-spacing: 5px;
+    letter-spacing: 2px;
 }
 
 
@@ -526,7 +842,9 @@ button:hover {
 
 .crawl h2 {
 
-    font-size: clamp(18px, 3vw, 35px);
+    font-size: clamp(16px, 3vw, 32px);
+
+    font-weight: 600;
 
     margin-bottom: 70px;
 
@@ -538,7 +856,9 @@ button:hover {
 
 .crawl p {
 
-    font-size: clamp(18px, 2.5vw, 32px);
+    font-size: clamp(18px, 2.5vw, 30px);
+
+    font-weight: 500;
 
     line-height: 1.6;
 
@@ -579,27 +899,69 @@ button:hover {
     pointer-events: none;
 }
 
-.final-ending div {
+.final-heart {
 
-    font-size: 50px;
+    font-size: 48px;
 
-    margin-bottom: 20px;
+    margin-bottom: 18px;
+
+    animation: floating 2.4s ease-in-out infinite;
 }
 
 .final-ending h1 {
 
-    font-size: clamp(40px, 8vw, 90px);
+    font-family: var(--font-display);
+    font-style: italic;
+    font-weight: 400;
 
-    font-weight: 300;
+    font-size: clamp(40px, 8vw, 88px);
 
-    margin-bottom: 15px;
+    margin-bottom: 14px;
 }
 
-.final-ending p {
+.final-name {
 
-    color: #aaa;
+    font-family: var(--font-script);
+    font-weight: 600;
 
-    letter-spacing: 5px;
+    font-size: clamp(24px, 4vw, 34px);
+
+    color: var(--pink);
+
+    letter-spacing: 2px;
+}
+
+.floaty {
+
+    position: absolute;
+
+    color: var(--gold);
+
+    font-size: 20px;
+
+    opacity: 0.7;
+
+    animation: floating 4s ease-in-out infinite;
+}
+
+.floaty-1 {
+    top: 28%;
+    left: 22%;
+    animation-delay: 0.3s;
+}
+
+.floaty-2 {
+    top: 32%;
+    right: 20%;
+    font-size: 16px;
+    color: var(--pink);
+    animation-delay: 1.1s;
+}
+
+.floaty-3 {
+    bottom: 30%;
+    left: 30%;
+    animation-delay: 1.8s;
 }
 
 
@@ -615,6 +977,18 @@ button:hover {
 
     50% {
         transform: translateY(-12px);
+    }
+}
+
+
+@keyframes driftGlow {
+
+    0%, 100% {
+        transform: translate(-50%, -50%) scale(1);
+    }
+
+    50% {
+        transform: translate(-46%, -54%) scale(1.08);
     }
 }
 
@@ -701,7 +1075,7 @@ button:hover {
 
     .intro-content h1 {
 
-        letter-spacing: -1px;
+        letter-spacing: 0;
     }
 
     .photo-card {
@@ -722,6 +1096,11 @@ button:hover {
     .crawl p {
 
         margin-bottom: 60px;
+    }
+
+    .floaty {
+
+        display: none;
     }
 
 }

@@ -23,6 +23,25 @@ const canvas =
 const ctx =
     canvas.getContext("2d");
 
+const starCanvas =
+    document.getElementById("starCanvas");
+
+const starCtx =
+    starCanvas.getContext("2d");
+
+const bgMusic =
+    document.getElementById("bgMusic");
+
+const muteButton =
+    document.getElementById("muteButton");
+
+let stars = [];
+
+const reduceMotion =
+    window.matchMedia(
+        "(prefers-reduced-motion: reduce)"
+    ).matches;
+
 
 /* =========================================
    CONFETTI SETTINGS
@@ -44,6 +63,14 @@ function resizeCanvas() {
 
     canvas.height =
         window.innerHeight;
+
+    starCanvas.width =
+        window.innerWidth;
+
+    starCanvas.height =
+        document.documentElement.scrollHeight;
+
+    createStars();
 }
 
 resizeCanvas();
@@ -52,6 +79,151 @@ window.addEventListener(
     "resize",
     resizeCanvas
 );
+
+
+/* =========================================
+   AMBIENT STARFIELD
+
+   A quiet layer of twinkling stars that runs
+   the full scrollable height of the page, tying
+   the whole journey together visually. Kept
+   subtle on purpose — this isn't meant to be
+   the star of the show (the photos and the
+   message are), just atmosphere.
+========================================= */
+
+function createStars() {
+
+    stars = [];
+
+    const area =
+        starCanvas.width * starCanvas.height;
+
+    const amount =
+        Math.min(
+            220,
+            Math.floor(area / 9000)
+        );
+
+    for (let i = 0; i < amount; i++) {
+
+        stars.push({
+
+            x: Math.random() * starCanvas.width,
+
+            y: Math.random() * starCanvas.height,
+
+            size: 0.6 + Math.random() * 1.6,
+
+            baseOpacity: 0.25 + Math.random() * 0.55,
+
+            twinkleSpeed: 0.005 + Math.random() * 0.015,
+
+            twinklePhase: Math.random() * Math.PI * 2
+
+        });
+
+    }
+
+}
+
+function drawStars(time) {
+
+    starCtx.clearRect(
+        0,
+        0,
+        starCanvas.width,
+        starCanvas.height
+    );
+
+    stars.forEach(star => {
+
+        const twinkle =
+            reduceMotion
+                ? 0
+                : Math.sin(
+                    time * star.twinkleSpeed +
+                    star.twinklePhase
+                ) * 0.35;
+
+        starCtx.globalAlpha =
+            Math.max(
+                0,
+                Math.min(
+                    1,
+                    star.baseOpacity + twinkle
+                )
+            );
+
+        starCtx.fillStyle = "#f5f0ff";
+
+        starCtx.beginPath();
+
+        starCtx.arc(
+            star.x,
+            star.y,
+            star.size,
+            0,
+            Math.PI * 2
+        );
+
+        starCtx.fill();
+
+    });
+
+    starCtx.globalAlpha = 1;
+
+    if (!reduceMotion) {
+
+        requestAnimationFrame(drawStars);
+
+    }
+
+}
+
+createStars();
+
+requestAnimationFrame(drawStars);
+
+
+/* =========================================
+   SCROLL REVEAL
+
+   Each section fades and rises into place as
+   it enters the viewport, giving the journey a
+   gentle sense of momentum as she scrolls.
+========================================= */
+
+const revealTargets =
+    document.querySelectorAll(
+        ".section, .photo-section, .transition-section, .almost-end, .rotate-section"
+    );
+
+const revealObserver =
+    new IntersectionObserver(
+        entries => {
+
+            entries.forEach(entry => {
+
+                if (entry.isIntersecting) {
+
+                    entry.target.classList.add(
+                        "in-view"
+                    );
+
+                }
+
+            });
+
+        },
+        { threshold: 0.2 }
+    );
+
+revealTargets.forEach(target => {
+
+    revealObserver.observe(target);
+
+});
 
 
 /* =========================================
@@ -216,6 +388,97 @@ function animateConfetti() {
 
 
 /* =========================================
+   BACKGROUND MUSIC
+
+   Browsers block audio with sound from
+   autoplaying until the user has interacted
+   with the page, so we start it right on the
+   Start button click (that counts as a valid
+   user interaction) and fade the volume in
+   gently instead of starting at full blast.
+========================================= */
+
+let musicMuted = false;
+
+function startMusic() {
+
+    bgMusic.volume = 0;
+
+    const playPromise =
+        bgMusic.play();
+
+    /*
+        play() can reject if the file is
+        missing or the browser still blocks it.
+        We just fail quietly instead of
+        breaking the rest of the journey.
+    */
+
+    if (playPromise) {
+
+        playPromise
+            .then(() => {
+
+                muteButton.classList.remove(
+                    "hidden"
+                );
+
+                fadeMusicIn();
+
+            })
+            .catch(() => {
+
+                // Autoplay blocked or file
+                // missing — that's fine, the
+                // journey still works without it.
+
+            });
+
+    }
+
+}
+
+function fadeMusicIn() {
+
+    const targetVolume = 0.35;
+
+    const step = 0.02;
+
+    const fadeInterval =
+        setInterval(() => {
+
+            if (bgMusic.volume < targetVolume - step) {
+
+                bgMusic.volume += step;
+
+            } else {
+
+                bgMusic.volume = targetVolume;
+
+                clearInterval(fadeInterval);
+
+            }
+
+        }, 100);
+
+}
+
+muteButton.addEventListener(
+    "click",
+    () => {
+
+        musicMuted = !musicMuted;
+
+        bgMusic.muted = musicMuted;
+
+        muteButton.textContent =
+            musicMuted ? "🔇" : "🔊";
+
+    }
+);
+
+
+/* =========================================
    START JOURNEY
 ========================================= */
 
@@ -224,6 +487,8 @@ startButton.addEventListener(
     () => {
 
         createConfetti();
+
+        startMusic();
 
 
         intro.style.opacity = "0";
@@ -243,6 +508,15 @@ startButton.addEventListener(
                 top: 0,
                 behavior: "instant"
             });
+
+            /*
+                The page just grew a lot taller now
+                that the journey content is visible,
+                so the starfield needs to stretch to
+                match the new scroll height.
+            */
+
+            resizeCanvas();
 
         }, 700);
 
@@ -284,6 +558,8 @@ readyButton.addEventListener(
     "click",
     () => {
 
+        finalSurpriseShown = true;
+
         showFinalSurprise();
 
     }
@@ -292,77 +568,77 @@ readyButton.addEventListener(
 
 /* =========================================
    DEVICE ORIENTATION
+
+   The old code relied on `orientationchange`
+   plus `window.orientation`, but window.orientation
+   is deprecated/removed on most modern phones
+   (including current iOS Safari), so this event
+   often never fires the way it used to. We use the
+   `matchMedia("(orientation: landscape)")` API
+   instead, which is the reliable, modern way to
+   detect landscape mode, and it also works as our
+   resize fallback since it fires on resize too.
 ========================================= */
 
-window.addEventListener(
-    "orientationchange",
-    () => {
+let finalSurpriseShown = false;
 
-        /*
-            orientation === 90 or -90
-            usually means landscape.
-        */
+const landscapeQuery =
+    window.matchMedia("(orientation: landscape)");
 
-        if (
-            Math.abs(
-                window.orientation
-            ) === 90
-        ) {
+function handleOrientationChange(e) {
 
-            showFinalSurprise();
+    /*
+        Only auto-trigger once, and only once the
+        user has actually reached the rotate section
+        (so we don't accidentally skip ahead if their
+        phone happens to already be in landscape mode
+        at some earlier point, e.g. on page load).
+    */
 
-        }
-
+    if (finalSurpriseShown) {
+        return;
     }
-);
 
+    const rotateSection =
+        document.getElementById("rotateSection");
 
-/* =========================================
-   SCREEN SIZE FALLBACK
-========================================= */
+    const rect =
+        rotateSection.getBoundingClientRect();
 
-window.addEventListener(
-    "resize",
-    () => {
+    const rotateSectionVisible =
+        rect.top < window.innerHeight &&
+        rect.bottom > 0;
 
-        /*
-            If the device becomes
-            wider than it is tall,
-            consider it landscape.
-        */
+    if (!rotateSectionVisible) {
+        return;
+    }
 
-        if (
-            window.innerWidth >
+    /*
+        Only trigger on small/mobile-ish screens,
+        so this doesn't fire unexpectedly while
+        resizing a desktop browser window.
+    */
+
+    const isLandscape =
+        e.matches;
+
+    const isSmallDevice =
+        Math.min(
+            window.innerWidth,
             window.innerHeight
-        ) {
+        ) < 600;
 
-            /*
-                Only trigger this on
-                smaller devices.
-            */
+    if (isLandscape && isSmallDevice) {
 
-            if (
-                window.innerWidth <
-                1200
-            ) {
+        finalSurpriseShown = true;
 
-                /*
-                    Don't automatically trigger
-                    while developing on desktop.
-                */
-
-                if (
-                    window.innerWidth >
-                    500
-                ) {
-
-                    // We intentionally leave
-                    // this empty for desktop.
-                }
-
-            }
-
-        }
+        showFinalSurprise();
 
     }
+
+}
+
+landscapeQuery.addEventListener(
+    "change",
+    handleOrientationChange
 );
