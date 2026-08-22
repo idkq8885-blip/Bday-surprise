@@ -2,8 +2,14 @@
    ELEMENTS
 ========================================= */
 
-const startButton =
-    document.getElementById("startButton");
+const yesButton =
+    document.getElementById("yesButton");
+
+const noButton =
+    document.getElementById("noButton");
+
+const introCaption =
+    document.getElementById("introCaption");
 
 const readyButton =
     document.getElementById("readyButton");
@@ -479,48 +485,279 @@ muteButton.addEventListener(
 
 
 /* =========================================
-   START JOURNEY
+   YES / NO GAME
+
+   "No" dodges away every time she tries to
+   get near it — on desktop it jumps on
+   hover, on touch devices it jumps right
+   after being tapped. The caption teases her
+   a little more with each attempt. "Yes"
+   grows slightly each time too, just to be
+   extra encouraging about the right choice.
 ========================================= */
 
-startButton.addEventListener(
+const noCaptions = [
+    "Do you want to open your surprise?",
+    "Are you sure?",
+    "Really really sure?",
+    "Hmm, come on...",
+    "You know you want to 👀",
+    "Okay last chance!",
+    "Fine, I'll just wait here forever 🥲"
+];
+
+let noAttempts = 0;
+
+function moveNoButton() {
+
+    if (!noButton.classList.contains("roaming")) {
+
+        const rect =
+            noButton.getBoundingClientRect();
+
+        noButton.style.left =
+            rect.left + "px";
+
+        noButton.style.top =
+            rect.top + "px";
+
+        noButton.classList.add("roaming");
+    }
+
+    const buttonWidth =
+        noButton.offsetWidth;
+
+    const buttonHeight =
+        noButton.offsetHeight;
+
+    const margin = 24;
+
+    const maxLeft =
+        window.innerWidth - buttonWidth - margin;
+
+    const maxTop =
+        window.innerHeight - buttonHeight - margin;
+
+    const randomLeft =
+        margin + Math.random() * Math.max(0, maxLeft - margin);
+
+    const randomTop =
+        margin + Math.random() * Math.max(0, maxTop - margin);
+
+    noButton.style.left =
+        randomLeft + "px";
+
+    noButton.style.top =
+        randomTop + "px";
+
+}
+
+function teaseNo() {
+
+    noAttempts += 1;
+
+    moveNoButton();
+
+    noButton.classList.remove("dodging");
+
+    // Force reflow so the animation can replay
+    void noButton.offsetWidth;
+
+    noButton.classList.add("dodging");
+
+    const captionIndex =
+        Math.min(
+            noAttempts,
+            noCaptions.length - 1
+        );
+
+    introCaption.style.opacity = "0";
+
+    setTimeout(() => {
+
+        introCaption.textContent =
+            noCaptions[captionIndex];
+
+        introCaption.style.opacity = "1";
+
+    }, 200);
+
+    const growth =
+        Math.min(noAttempts, 5);
+
+    yesButton.style.fontSize =
+        (15 + growth * 1.6) + "px";
+
+    yesButton.style.padding =
+        (17 + growth * 1.6) + "px " + (32 + growth * 3) + "px";
+
+}
+
+noButton.addEventListener(
     "click",
+    (e) => {
+
+        e.preventDefault();
+
+        teaseNo();
+
+    }
+);
+
+noButton.addEventListener(
+    "mouseenter",
     () => {
 
-        createConfetti();
+        // Only dodge on real hover-capable
+        // devices, so touch taps above still
+        // register as a click first.
 
-        startMusic();
+        if (window.matchMedia("(hover: hover)").matches) {
+
+            teaseNo();
+
+        }
+
+    }
+);
 
 
-        intro.style.opacity = "0";
+/* =========================================
+   TAP-FUN BURSTS
 
+   A tiny, silly reward for tapping certain
+   decorative elements around the site.
+========================================= */
+
+const burstEmojis = ["✦", "❤", "✧", "💫", "🌸"];
+
+function spawnBurst(x, y) {
+
+    const count = 6;
+
+    for (let i = 0; i < count; i++) {
+
+        const particle =
+            document.createElement("span");
+
+        particle.className = "burst-particle";
+
+        particle.textContent =
+            burstEmojis[
+                Math.floor(Math.random() * burstEmojis.length)
+            ];
+
+        const angle =
+            (Math.PI * 2 * i) / count +
+            Math.random() * 0.5;
+
+        const distance =
+            40 + Math.random() * 30;
+
+        particle.style.left = x + "px";
+        particle.style.top = y + "px";
+
+        particle.style.setProperty(
+            "--burst-x",
+            Math.cos(angle) * distance + "px"
+        );
+
+        particle.style.setProperty(
+            "--burst-y",
+            Math.sin(angle) * distance + "px"
+        );
+
+        document.body.appendChild(particle);
 
         setTimeout(() => {
 
-            intro.classList.add(
-                "hidden"
-            );
+            particle.remove();
 
-            journey.classList.remove(
-                "hidden"
-            );
-
-            window.scrollTo({
-                top: 0,
-                behavior: "instant"
-            });
-
-            /*
-                The page just grew a lot taller now
-                that the journey content is visible,
-                so the starfield needs to stretch to
-                match the new scroll height.
-            */
-
-            resizeCanvas();
-
-        }, 700);
+        }, 800);
 
     }
+
+}
+
+document.querySelectorAll(".tap-fun").forEach(el => {
+
+    el.addEventListener("click", (e) => {
+
+        spawnBurst(e.clientX, e.clientY);
+
+    });
+
+});
+
+// Photo cards get a little wiggle when tapped,
+// on top of the sparkle burst.
+
+document.querySelectorAll(
+    ".photo-card, .modern-photo"
+).forEach(el => {
+
+    el.addEventListener("click", (e) => {
+
+        spawnBurst(e.clientX, e.clientY);
+
+        el.classList.remove("wiggle");
+
+        void el.offsetWidth;
+
+        el.classList.add("wiggle");
+
+    });
+
+});
+
+
+/* =========================================
+   BEGIN JOURNEY
+
+   Runs once she actually says yes.
+========================================= */
+
+function beginJourney() {
+
+    createConfetti();
+
+    startMusic();
+
+
+    intro.style.opacity = "0";
+
+
+    setTimeout(() => {
+
+        intro.classList.add(
+            "hidden"
+        );
+
+        journey.classList.remove(
+            "hidden"
+        );
+
+        window.scrollTo({
+            top: 0,
+            behavior: "instant"
+        });
+
+        /*
+            The page just grew a lot taller now
+            that the journey content is visible,
+            so the starfield needs to stretch to
+            match the new scroll height.
+        */
+
+        resizeCanvas();
+
+    }, 700);
+
+}
+
+yesButton.addEventListener(
+    "click",
+    beginJourney
 );
 
 

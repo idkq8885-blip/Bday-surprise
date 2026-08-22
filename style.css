@@ -223,6 +223,120 @@ body {
     margin-bottom: 40px;
 }
 
+#introCaption {
+
+    transition: opacity 0.2s ease;
+}
+
+
+/* =========================================
+   YES / NO GAME
+
+   The "No" button dodges away the moment
+   she tries to click it (or hovers, on
+   desktop), so the only real choice is Yes.
+   It's meant to be a little chase, not a
+   wall — it should make her laugh, not
+   actually block her.
+========================================= */
+
+.intro-buttons {
+
+    position: relative;
+
+    display: flex;
+
+    gap: 18px;
+
+    justify-content: center;
+
+    align-items: center;
+
+    flex-wrap: wrap;
+
+    min-height: 60px;
+}
+
+#yesButton {
+
+    transition:
+        transform 0.3s ease,
+        box-shadow 0.3s ease,
+        font-size 0.3s ease,
+        padding 0.3s ease;
+}
+
+.no-button {
+
+    background: transparent;
+
+    color: var(--text-muted);
+
+    box-shadow: none;
+
+    border: 1.5px solid rgba(173, 159, 206, 0.5);
+}
+
+.no-button:hover {
+
+    box-shadow: none;
+}
+
+.no-button.roaming {
+
+    position: fixed;
+
+    z-index: 10002;
+
+    transition:
+        left 0.35s ease,
+        top 0.35s ease;
+}
+
+.no-button.dodging {
+
+    animation: wobble 0.4s ease;
+}
+
+
+/* =========================================
+   TAP-FUN
+   Small reactive elements sprinkled through
+   the journey — tapping them pops a little
+   burst of sparkles/hearts for no reason
+   other than fun.
+========================================= */
+
+.tap-fun {
+
+    cursor: pointer;
+
+    transition: transform 0.25s ease;
+}
+
+.tap-fun:hover {
+
+    transform: scale(1.12) rotate(-4deg);
+}
+
+.wiggle {
+
+    animation: wiggle 0.5s ease;
+}
+
+.burst-particle {
+
+    position: fixed;
+
+    pointer-events: none;
+
+    z-index: 10003;
+
+    font-size: 18px;
+
+    animation: burstPop 0.8s ease forwards;
+}
+
 
 /* =========================================
    BUTTON
@@ -977,6 +1091,57 @@ button:hover .btn-arrow {
 
     50% {
         transform: translateY(-12px);
+    }
+}
+
+
+@keyframes wobble {
+
+    0%, 100% {
+        transform: rotate(0deg);
+    }
+
+    25% {
+        transform: rotate(-8deg);
+    }
+
+    75% {
+        transform: rotate(8deg);
+    }
+}
+
+
+@keyframes wiggle {
+
+    0%, 100% {
+        transform: rotate(0deg) scale(1);
+    }
+
+    25% {
+        transform: rotate(-3deg) scale(1.03);
+    }
+
+    75% {
+        transform: rotate(3deg) scale(1.03);
+    }
+}
+
+
+@keyframes burstPop {
+
+    0% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(0.6);
+    }
+
+    100% {
+        opacity: 0;
+        transform:
+            translate(
+                calc(-50% + var(--burst-x, 0px)),
+                calc(-50% + var(--burst-y, -60px))
+            )
+            scale(1.2);
     }
 }
 
