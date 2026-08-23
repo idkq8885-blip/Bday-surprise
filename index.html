@@ -253,6 +253,114 @@
 
 
         <!-- =====================================
+             MINI GAME — POP THE BALLOONS
+        ====================================== -->
+
+        <section class="section game-section balloon-section" id="balloonSection">
+
+            <p class="small-title">MINI GAME</p>
+
+            <h2>
+                Pop <span class="script">them</span> all
+            </h2>
+
+            <p>
+                Tap every balloon to find a little
+                surprise hiding inside.
+            </p>
+
+            <div class="balloon-field" id="balloonField">
+
+                <button class="balloon-btn" type="button" data-message="You + me = chaos 😂">
+                    <span class="balloon"></span>
+                </button>
+
+                <button class="balloon-btn" type="button" data-message="Certified best friend 🏆">
+                    <span class="balloon"></span>
+                </button>
+
+                <button class="balloon-btn" type="button" data-message="So many memories 💛">
+                    <span class="balloon"></span>
+                </button>
+
+                <button class="balloon-btn" type="button" data-message="Still not over that time 😭">
+                    <span class="balloon"></span>
+                </button>
+
+                <button class="balloon-btn" type="button" data-message="Aging like fine wine 🍷">
+                    <span class="balloon"></span>
+                </button>
+
+                <button class="balloon-btn" type="button" data-message="Officially another year cooler 😎">
+                    <span class="balloon"></span>
+                </button>
+
+            </div>
+
+            <p class="lock-hint" id="balloonLockHint">
+                🔒 Pop them all to continue
+            </p>
+
+            <p class="game-complete hidden" id="balloonCompleteMsg">
+                You found them all 🎈 keep scrolling for more.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================
+             MINI GAME — BLOW OUT THE CANDLE
+        ====================================== -->
+
+        <section class="section game-section candle-section" id="candleSection">
+
+            <p class="small-title">MINI GAME</p>
+
+            <h2>
+                Make a <span class="script">wish</span>
+            </h2>
+
+            <p id="candleInstructions">
+                Light a candle, make a wish, then
+                actually blow it out. Grab your mic!
+            </p>
+
+            <div class="cake-wrap">
+
+                <div class="candle">
+
+                    <div class="flame" id="flame"></div>
+
+                    <div class="wick"></div>
+
+                </div>
+
+                <div class="cake-body">
+
+                    <div class="cake-icing"></div>
+
+                </div>
+
+            </div>
+
+            <div id="candleCountdown" class="candle-countdown hidden"></div>
+
+            <button id="candleReadyButton" class="candle-btn">
+                I'm Ready to Blow 🎤
+            </button>
+
+            <button id="candleFallbackButton" class="candle-btn candle-fallback hidden" type="button">
+                Can't blow right now? Tap here
+            </button>
+
+            <p id="candleSuccessMsg" class="game-complete hidden">
+                Yay! Wish made 🌠 I hope it comes true.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================
              END OF NORMAL JOURNEY
         ====================================== -->
 

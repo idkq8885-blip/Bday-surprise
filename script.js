@@ -41,6 +41,30 @@ const bgMusic =
 const muteButton =
     document.getElementById("muteButton");
 
+const balloonButtons =
+    document.querySelectorAll(".balloon-btn");
+
+const balloonCompleteMsg =
+    document.getElementById("balloonCompleteMsg");
+
+const candleReadyButton =
+    document.getElementById("candleReadyButton");
+
+const candleFallbackButton =
+    document.getElementById("candleFallbackButton");
+
+const candleCountdown =
+    document.getElementById("candleCountdown");
+
+const candleInstructions =
+    document.getElementById("candleInstructions");
+
+const candleSuccessMsg =
+    document.getElementById("candleSuccessMsg");
+
+const flame =
+    document.getElementById("flame");
+
 let stars = [];
 
 const reduceMotion =
@@ -751,6 +775,8 @@ function beginJourney() {
 
         resizeCanvas();
 
+        initBalloonDrift();
+
     }, 700);
 
 }
@@ -879,3 +905,692 @@ landscapeQuery.addEventListener(
     "change",
     handleOrientationChange
 );
+
+
+/* =========================================
+   MINI GAME — POP THE BALLOONS
+
+   Each balloon hides a little message. Tap
+   one and it pops with a sparkle burst and
+   floats its message up before fading. Once
+   every balloon has been popped, a small
+   congrats note appears — and only then does
+   the page let her scroll on to the candle.
+   Balloons drift freely and bounce gently
+   around inside the field the whole time.
+========================================= */
+
+let balloonsPopped = 0;
+let balloonsComplete = false;
+
+const totalBalloons =
+    balloonButtons.length;
+
+const balloonField =
+    document.getElementById("balloonField");
+
+const balloonLockHint =
+    document.getElementById("balloonLockHint");
+
+const balloonSection =
+    document.getElementById("balloonSection");
+
+const candleSection =
+    document.getElementById("candleSection");
+
+function showBalloonMessage(text, x, y) {
+
+    const message =
+        document.createElement("div");
+
+    message.className = "balloon-message";
+
+    message.textContent = text;
+
+    message.style.left = x + "px";
+    message.style.top = y + "px";
+
+    document.body.appendChild(message);
+
+    setTimeout(() => {
+
+        message.remove();
+
+    }, 1600);
+
+}
+
+balloonButtons.forEach(btn => {
+
+    btn.addEventListener("click", () => {
+
+        if (btn.classList.contains("popped")) {
+            return;
+        }
+
+        btn.classList.add("popped");
+
+        const rect =
+            btn.getBoundingClientRect();
+
+        const x =
+            rect.left + rect.width / 2;
+
+        const y =
+            rect.top + rect.height / 2;
+
+        spawnBurst(x, y);
+
+        showBalloonMessage(
+            btn.dataset.message || "🎈",
+            x,
+            y
+        );
+
+        balloonsPopped += 1;
+
+        if (balloonsPopped === totalBalloons) {
+
+            balloonsComplete = true;
+
+            balloonLockHint.classList.add("hidden");
+
+            balloonCompleteMsg.classList.remove(
+                "hidden"
+            );
+
+            requestAnimationFrame(() => {
+
+                balloonCompleteMsg.classList.add(
+                    "visible"
+                );
+
+            });
+
+            balloonGateObserver.disconnect();
+
+        }
+
+    });
+
+});
+
+
+/* =========================================
+   BALLOON DRIFT
+
+   Each balloon gets its own gentle random
+   velocity and quietly bounces around inside
+   the field, occasionally nudged off course
+   so the movement never feels mechanical.
+   Runs independently of the small CSS bob/
+   rotate animation already on each balloon,
+   which layers on top of this.
+========================================= */
+
+function initBalloonDrift() {
+
+    const maxSpeed = 0.55;
+
+    const balloonState =
+        Array.from(balloonButtons).map(btn => ({
+
+            el: btn,
+
+            x: Math.random() * 200,
+
+            y: Math.random() * 200,
+
+            vx: (Math.random() - 0.5) * maxSpeed,
+
+            vy: (Math.random() - 0.5) * maxSpeed
+
+        }));
+
+    // Spread them out inside the field as soon
+    // as it actually has real dimensions (it's
+    // inside the hidden journey until she says
+    // yes, so this runs right after that reveal).
+
+    const fieldRect =
+        balloonField.getBoundingClientRect();
+
+    balloonState.forEach(b => {
+
+        const bw =
+            b.el.offsetWidth || 58;
+
+        const bh =
+            b.el.offsetHeight || 72;
+
+        b.x =
+            Math.random() * Math.max(0, fieldRect.width - bw);
+
+        b.y =
+            Math.random() * Math.max(0, fieldRect.height - bh);
+
+        b.el.style.left = b.x + "px";
+        b.el.style.top = b.y + "px";
+
+    });
+
+    function step() {
+
+        if (balloonsPopped >= totalBalloons) {
+
+            // Everything's popped — nothing
+            // left to animate.
+
+            return;
+
+        }
+
+        const rect =
+            balloonField.getBoundingClientRect();
+
+        const width =
+            rect.width;
+
+        const height =
+            rect.height;
+
+        balloonState.forEach(b => {
+
+            if (b.el.classList.contains("popped")) {
+                return;
+            }
+
+            // Occasional gentle nudge so paths
+            // don't look like a robotic bounce.
+
+            if (Math.random() < 0.01) {
+
+                b.vx += (Math.random() - 0.5) * 0.25;
+
+                b.vy += (Math.random() - 0.5) * 0.25;
+
+                b.vx = Math.max(-maxSpeed, Math.min(maxSpeed, b.vx));
+                b.vy = Math.max(-maxSpeed, Math.min(maxSpeed, b.vy));
+
+            }
+
+            const bw =
+                b.el.offsetWidth || 58;
+
+            const bh =
+                b.el.offsetHeight || 72;
+
+            const maxX =
+                Math.max(0, width - bw);
+
+            const maxY =
+                Math.max(0, height - bh);
+
+            let nx = b.x + b.vx;
+            let ny = b.y + b.vy;
+
+            if (nx <= 0) {
+                nx = 0;
+                b.vx = Math.abs(b.vx);
+            } else if (nx >= maxX) {
+                nx = maxX;
+                b.vx = -Math.abs(b.vx);
+            }
+
+            if (ny <= 0) {
+                ny = 0;
+                b.vy = Math.abs(b.vy);
+            } else if (ny >= maxY) {
+                ny = maxY;
+                b.vy = -Math.abs(b.vy);
+            }
+
+            b.x = nx;
+            b.y = ny;
+
+            b.el.style.left = nx + "px";
+            b.el.style.top = ny + "px";
+
+        });
+
+        requestAnimationFrame(step);
+
+    }
+
+    requestAnimationFrame(step);
+
+}
+
+
+/* =========================================
+   BALLOON GATE
+
+   She can't scroll into the candle section
+   until every balloon has been popped — if
+   she tries, we smoothly pull her back and
+   give the hint a little shake.
+========================================= */
+
+const balloonGateObserver =
+    new IntersectionObserver(
+        entries => {
+
+            entries.forEach(entry => {
+
+                if (entry.isIntersecting && !balloonsComplete) {
+
+                    balloonSection.scrollIntoView({
+                        behavior: "smooth",
+                        block: "start"
+                    });
+
+                    balloonField.classList.remove("shake");
+
+                    void balloonField.offsetWidth;
+
+                    balloonField.classList.add("shake");
+
+                }
+
+            });
+
+        },
+        { threshold: 0.05 }
+    );
+
+balloonGateObserver.observe(candleSection);
+
+
+/* =========================================
+   MINI GAME — BLOW OUT THE CANDLE
+
+   Primary path: ask for the microphone,
+   count down so she knows when to blow, then
+   listen for a sustained burst of volume and
+   extinguish the flame when it happens. The
+   flame also flickers live in response to
+   how loud she's blowing, for a bit of magic.
+
+   Fallback path: if the mic is denied,
+   unsupported, or she just doesn't want to
+   use it, a "tap and hold" button appears
+   that does the same thing without audio.
+========================================= */
+
+let candleOut = false;
+let listeningStopped = false;
+
+function extinguishCandle() {
+
+    if (candleOut) {
+        return;
+    }
+
+    candleOut = true;
+    listeningStopped = true;
+
+    const rect =
+        flame.getBoundingClientRect();
+
+    const x =
+        rect.left + rect.width / 2;
+
+    const y =
+        rect.top + rect.height / 2;
+
+    /*
+        The live listening loop sets inline
+        transform/opacity on the flame for
+        real-time feedback. Inline styles beat
+        stylesheet rules, so those need to be
+        cleared here or the flame-out class's
+        fade-out transition would never actually
+        take visual effect.
+    */
+
+    flame.style.transform = "";
+    flame.style.opacity = "";
+
+    flame.classList.add("flame-out");
+
+    spawnSmoke(x, y);
+
+    spawnBurst(x, y);
+
+    candleCountdown.classList.add("hidden");
+
+    candleReadyButton.classList.add("hidden");
+
+    candleFallbackButton.classList.add("hidden");
+
+    candleInstructions.style.opacity = "0";
+
+    candleSuccessMsg.classList.remove("hidden");
+
+    requestAnimationFrame(() => {
+
+        candleSuccessMsg.classList.add("visible");
+
+    });
+
+}
+
+function spawnSmoke(x, y) {
+
+    for (let i = 0; i < 3; i++) {
+
+        setTimeout(() => {
+
+            const puff =
+                document.createElement("span");
+
+            puff.className = "smoke-puff";
+
+            puff.style.left =
+                (x + (Math.random() * 16 - 8)) + "px";
+
+            puff.style.top =
+                (y + (Math.random() * 10 - 5)) + "px";
+
+            document.body.appendChild(puff);
+
+            setTimeout(() => {
+
+                puff.remove();
+
+            }, 1300);
+
+        }, i * 180);
+
+    }
+
+}
+
+function runCountdown(callback) {
+
+    candleCountdown.classList.remove("hidden");
+
+    const steps = ["3", "2", "1", "Blow! 🌬️"];
+
+    let i = 0;
+
+    function nextStep() {
+
+        candleCountdown.textContent = steps[i];
+
+        candleCountdown.style.animation = "none";
+
+        void candleCountdown.offsetWidth;
+
+        candleCountdown.style.animation =
+            "countPop 0.5s ease";
+
+        i += 1;
+
+        if (i < steps.length) {
+
+            setTimeout(nextStep, 800);
+
+        } else {
+
+            setTimeout(callback, 700);
+
+        }
+
+    }
+
+    nextStep();
+
+}
+
+function startMicListening() {
+
+    navigator.mediaDevices
+        .getUserMedia({ audio: true })
+        .then(stream => {
+
+            candleInstructions.textContent =
+                "Get close to your mic and blow on 1!";
+
+            runCountdown(() => {
+
+                listenForBlow(stream);
+
+            });
+
+        })
+        .catch(() => {
+
+            // Mic denied or unavailable — fall
+            // back to the tap-and-hold button
+            // instead of leaving her stuck.
+
+            candleInstructions.textContent =
+                "Couldn't access your mic — tap the button below instead.";
+
+            candleReadyButton.classList.add("hidden");
+
+            candleFallbackButton.classList.remove(
+                "hidden"
+            );
+
+        });
+
+}
+
+function listenForBlow(stream) {
+
+    candleInstructions.textContent =
+        "Blow! 🌬️";
+
+    const AudioContextClass =
+        window.AudioContext || window.webkitAudioContext;
+
+    const audioCtx =
+        new AudioContextClass();
+
+    if (audioCtx.state === "suspended") {
+
+        audioCtx.resume();
+
+    }
+
+    const source =
+        audioCtx.createMediaStreamSource(stream);
+
+    const analyser =
+        audioCtx.createAnalyser();
+
+    analyser.fftSize = 512;
+
+    source.connect(analyser);
+
+    const dataArray =
+        new Uint8Array(analyser.frequencyBinCount);
+
+    flame.classList.add("flame-listening");
+
+    let loudFrames = 0;
+
+    const requiredLoudFrames = 12;
+
+    const volumeThreshold = 42;
+
+    function checkVolume() {
+
+        if (listeningStopped) {
+
+            stream.getTracks().forEach(
+                track => track.stop()
+            );
+
+            audioCtx.close();
+
+            return;
+
+        }
+
+        analyser.getByteFrequencyData(dataArray);
+
+        let sum = 0;
+
+        for (let i = 0; i < dataArray.length; i++) {
+
+            sum += dataArray[i];
+
+        }
+
+        const average =
+            sum / dataArray.length;
+
+        /*
+            Give the flame live feedback as she
+            blows — leaning and shrinking with
+            the volume, instead of just sitting
+            there until the threshold is hit.
+        */
+
+        const lean =
+            Math.min(average / volumeThreshold, 1.6);
+
+        flame.style.transform =
+            `translateX(-50%) rotate(${lean * 25}deg) scale(${1 - lean * 0.25}, ${1 + lean * 0.15})`;
+
+        flame.style.opacity =
+            String(Math.max(0.3, 1 - lean * 0.5));
+
+        if (average > volumeThreshold) {
+
+            loudFrames += 1;
+
+        } else {
+
+            loudFrames = Math.max(0, loudFrames - 1);
+
+        }
+
+        if (loudFrames >= requiredLoudFrames) {
+
+            stream.getTracks().forEach(
+                track => track.stop()
+            );
+
+            audioCtx.close();
+
+            extinguishCandle();
+
+            return;
+
+        }
+
+        requestAnimationFrame(checkVolume);
+
+    }
+
+    checkVolume();
+
+    // Safety net — if she's quiet, on mute, or
+    // the mic just isn't picking anything up,
+    // offer the fallback after a while instead
+    // of leaving her waiting forever.
+
+    setTimeout(() => {
+
+        if (!candleOut) {
+
+            candleFallbackButton.classList.remove(
+                "hidden"
+            );
+
+        }
+
+    }, 9000);
+
+}
+
+candleReadyButton.addEventListener(
+    "click",
+    () => {
+
+        candleReadyButton.classList.add("hidden");
+
+        if (
+            navigator.mediaDevices &&
+            navigator.mediaDevices.getUserMedia
+        ) {
+
+            startMicListening();
+
+        } else {
+
+            candleInstructions.textContent =
+                "Your browser can't use the mic here — tap below instead.";
+
+            candleFallbackButton.classList.remove(
+                "hidden"
+            );
+
+        }
+
+    }
+);
+
+let holdTimer = null;
+
+function startHold() {
+
+    if (candleOut) {
+        return;
+    }
+
+    candleFallbackButton.classList.add("holding");
+
+    holdTimer = setTimeout(() => {
+
+        extinguishCandle();
+
+    }, 1100);
+
+}
+
+function cancelHold() {
+
+    candleFallbackButton.classList.remove("holding");
+
+    if (holdTimer) {
+
+        clearTimeout(holdTimer);
+
+        holdTimer = null;
+
+    }
+
+}
+
+candleFallbackButton.addEventListener(
+    "pointerdown",
+    startHold
+);
+
+candleFallbackButton.addEventListener(
+    "pointerup",
+    cancelHold
+);
+
+candleFallbackButton.addEventListener(
+    "pointerleave",
+    cancelHold
+);
+
+if (!window.PointerEvent) {
+
+    // Very old browsers without Pointer Events —
+    // just extinguish on a plain click/tap rather
+    // than leave the fallback unusable.
+
+    candleFallbackButton.addEventListener(
+        "click",
+        extinguishCandle
+    );
+
+}
