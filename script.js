@@ -65,6 +65,24 @@ const candleSuccessMsg =
 const flame =
     document.getElementById("flame");
 
+const meterEmoji =
+    document.getElementById("meterEmoji");
+
+const meterLabel =
+    document.getElementById("meterLabel");
+
+const meterFill =
+    document.getElementById("meterFill");
+
+const meterSlider =
+    document.getElementById("meterSlider");
+
+const meterCaption =
+    document.getElementById("meterCaption");
+
+const meterWrap =
+    document.querySelector(".meter-wrap");
+
 let stars = [];
 
 const reduceMotion =
@@ -1594,3 +1612,129 @@ if (!window.PointerEvent) {
     );
 
 }
+
+
+/* =========================================
+   MINI GAME — FRIENDSHIP METER
+
+   A slider that looks fully draggable, but
+   no matter where she lets go, it gently
+   springs the rest of the way to "besties
+   forever" after a beat — the joke being
+   that the meter "has a mind of its own."
+   The label and emoji update live as she
+   drags, so it still feels responsive right
+   up until it makes its own decision.
+========================================= */
+
+const meterStages = [
+    { max: 19, emoji: "😐", text: "meh" },
+    { max: 39, emoji: "🙂", text: "you're alright" },
+    { max: 64, emoji: "😊", text: "pretty great, ngl" },
+    { max: 89, emoji: "🥹", text: "one of my favorites" },
+    { max: 100, emoji: "💜", text: "besties forever" }
+];
+
+function getMeterStage(value) {
+
+    return (
+        meterStages.find(stage => value <= stage.max) ||
+        meterStages[meterStages.length - 1]
+    );
+
+}
+
+function updateMeterDisplay(value) {
+
+    meterFill.style.width = value + "%";
+
+    const stage =
+        getMeterStage(value);
+
+    meterEmoji.textContent = stage.emoji;
+
+    meterLabel.textContent = stage.text;
+
+}
+
+function lockMeterToMax() {
+
+    meterSlider.value = "100";
+
+    meterFill.classList.add("locking");
+
+    updateMeterDisplay(100);
+
+    meterWrap.classList.remove("locked-in");
+
+    void meterWrap.offsetWidth;
+
+    meterWrap.classList.add("locked-in");
+
+    meterCaption.textContent =
+        "Yeah... we both knew where this was going 💜";
+
+    meterCaption.classList.add("visible");
+
+    const rect =
+        meterSlider.getBoundingClientRect();
+
+    spawnBurst(
+        rect.right - 16,
+        rect.top + rect.height / 2
+    );
+
+    setTimeout(() => {
+
+        meterFill.classList.remove("locking");
+
+    }, 900);
+
+}
+
+let meterLockTimeout = null;
+
+meterSlider.addEventListener("input", () => {
+
+    // She's actively dragging again — cancel any
+    // pending auto-lock from a previous release so
+    // it doesn't jump the value out from under her.
+
+    if (meterLockTimeout) {
+
+        clearTimeout(meterLockTimeout);
+
+        meterLockTimeout = null;
+
+    }
+
+    updateMeterDisplay(Number(meterSlider.value));
+
+});
+
+meterSlider.addEventListener("change", () => {
+
+    const value =
+        Number(meterSlider.value);
+
+    if (value >= 100) {
+
+        lockMeterToMax();
+
+        return;
+
+    }
+
+    // A short beat before it "makes up its
+    // mind" — long enough to feel intentional,
+    // short enough to still feel snappy.
+
+    meterLockTimeout = setTimeout(() => {
+
+        meterLockTimeout = null;
+
+        lockMeterToMax();
+
+    }, 450);
+
+});
