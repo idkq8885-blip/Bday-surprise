@@ -1631,8 +1631,8 @@ const meterStages = [
     { max: 19, emoji: "😐", text: "meh" },
     { max: 39, emoji: "🙂", text: "you're alright" },
     { max: 64, emoji: "😊", text: "pretty great, ngl" },
-    { max: 89, emoji: "🥹", text: "one of my favorites" },
-    { max: 100, emoji: "💜", text: "besties forever" }
+    { max: 89, emoji: "💫", text: "somewhat speacial" },
+    { max: 100, emoji: "❤️", text: "one of my favorites" }
 ];
 
 function getMeterStage(value) {
