@@ -1672,7 +1672,7 @@ function lockMeterToMax() {
     meterWrap.classList.add("locked-in");
 
     meterCaption.textContent =
-        "Yeah... we both knew where this was going 💜";
+        "Yeah... I knew it ✨";
 
     meterCaption.classList.add("visible");
 
